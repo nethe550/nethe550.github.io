@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+        <meta http-equiv="Content-Type" content="text/html" />
+        <meta name="author" content="nethe550" />
+        <meta name="description" content="Upload an image and convert it into ASCI art!" />
+        <title>ASCII Renderer</title>
+        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="native.css" />
+    </head>
+    <body>
+
+        <div id="wrapper">
+
+            <h2>Convert an Image to ASCII Art</h2>
+            <p style="margin:1em 2em">Upload an image and convert it into ASCII art!</p>
+
+            <div id="controls">
+
+                <table id="controls-table">
+
+                    <tr class="controls-row">
+                        <th class="controls-header">
+                            <label for="image">Image: </label>
+                        </th>
+                        <td class="controls-content">
+                            <input name="name" id="image-in" accept="image/*" type="file" onchange="handle(this.files)" />
+                        </td>
+                    </tr>
+
+                    <tr class="controls-row alt-row">
+                        <th class="controls-header">
+                            <label for="render-scale">Render Scale:</label>
+                        </th>
+                        <td class="controls-content">
+                            <input name="render-scale" id="render-scale-in" type="range" min="0.3" max="2" step="0.2" value="1" />
+                        </td>
+                    </tr>
+
+                    <tr class="controls-row alt-row">
+                        <th class="controls-header ">
+                            <label for="image-scale">Image Scale:</label>
+                        </th>
+                        <td class="controls-content">
+                            <input name="image-scale" id="image-scale-in" type="range" min="0.1" max="1" step="0.1" value="1" />
+                        </td>
+                    </tr>
+
+                    <tr class="controls-row">
+                        <th class="controls-header">
+                            <label for="palette">Palette:</label>
+                        </th>
+                        <td class="controls-content">
+                            <select name="palette" id="palette-in">
+                                <option value="standard">Standard</option>
+                                <option value="alternate">Alternate</option>
+                                <option value="shading">Shading</option>
+                                <option value="short">Short</option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr class="controls-row alt-row">
+                        <th class="controls-header">
+                            <label for="ignore-transparency">Ignore Transparency:</label>
+                        </th>
+                        <td class="controls-content">
+                            <input name="ignore-transparency" id="ignore-transparency-in" type="checkbox" checked="checked" />
+                            <span class="checkbox-styled" id="ignore-transparency-checkbox"></span>
+                        </td>
+                    </tr>
+
+                    <tr class="controls-row alt-row">
+                        <th class="controls-header">
+                            <label for="ignore-white">Ignore White:</label>
+                        </th>
+                        <td class="controls-content">
+                            <input name="ignore-white" id="ignore-white-in" type="checkbox" checked="checked" />
+                            <span class="checkbox-styled" id="ignore-white-checkbox"></span>
+                        </td>
+                    </tr>
+
+                    <tr class="controls-row alt-row">
+                        <th class="controls-header">
+                            <label for="ignore-threshold">Ignore Threshold:</label>
+                        </th>
+                        <td class="controls-content">
+                            <input name="ignore-threshold" id="ignore-threshold-in" type="range" min="0" max="64" step="1" value="16" />
+                        </td>
+                    </tr>
+
+                    <tr class="controls-row">
+                        <td class="controls-content" colspan="2">
+                            <button id="generate-in" onclick="generate()">Generate</button>
+                        </td>
+                    </tr>
+
+                    <tr class="controls-row">
+                        <td class="controls-content" colspan="2">
+                            <button id="copy-in" onclick="copy()">Copy</button>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </div>
+
+            <pre id="s"><i>Click 'Generate'. Your image will appear here...</i></pre>
+
+        </div>
+
+        <script src="ASCIIRenderer.js"></script>
+        <script>
+            let output = document.getElementById("s");
+
+            let imageScale = 1;
+            let palette = ASCIIRenderer.Palettes.Standard;
+            let files = [];
+            let ignoreTransparency = true;
+            let ignoreWhite = true;
+            let ignoreThreshold = 16;
+
+            document.getElementById('render-scale-in').addEventListener('input', () => {
+                output.style.fontSize = `${document.getElementById('render-scale-in').value * 10}px`;
+            });
+
+            document.getElementById('image-scale-in').addEventListener('input', () => {
+                imageScale = document.getElementById('image-scale-in').value;
+            });
+
+            document.getElementById('palette-in').addEventListener('change', () => {
+                switch (document.getElementById('palette-in').selectedIndex) {
+                    case 0:
+                        palette = ASCIIRenderer.Palettes.Standard;
+                        break;
+                    case 1:
+                        palette = ASCIIRenderer.Palettes.Alternate;
+                        break;
+                    case 2:
+                        palette = ASCIIRenderer.Palettes.Shading;
+                        break;
+                    case 3:
+                        palette = ASCIIRenderer.Palettes.Short;
+                        break;
+                }
+            });
+
+            document.getElementById('ignore-transparency-in').addEventListener('input', () => {
+                ignoreTransparency = document.getElementById('ignore-transparency-in').checked;
+            });
+
+            document.getElementById('ignore-white-in').addEventListener('input', () => {
+                ignoreWhite = document.getElementById('ignore-white-in').checked;
+            });
+            
+            document.getElementById('ignore-threshold-in').addEventListener('input', () => {
+                ignoreThreshold = document.getElementById('ignore-threshold-in').value;
+            });
+
+
+            const handle = (_files) => files = _files;
+
+            const copy = () => {
+
+                navigator.clipboard.writeText(output.innerText)
+                    .then(() => {
+                        document.getElementById('copy-in').innerText = 'Copied!';
+                        setTimeout(() => {
+                            document.getElementById('copy-in').innerText = 'Copy';
+                        }, 1500);
+                    })
+                    .catch(err => {
+                        document.getElementById('copy-in').innerText = 'Failed to Copy!';
+                        setTimeout(() => {
+                            document.getElementById('copy-in').innerText = 'Copy';
+                        }, 1500);
+                    });
+
+            };
+
+            const generate = () => {
+
+                output.innerText = '';
+
+                if (!files.length || files.length === 0) return;
+
+                let image = new Image();
+
+                image.src = window.URL.createObjectURL(files[0]);
+
+                image.onload = () => {
+
+                    window.URL.revokeObjectURL(this.src);
+
+                    let canvas = document.createElement('canvas');
+
+                    canvas.width = image.naturalWidth;
+                    canvas.height = image.naturalHeight;
+
+                    let ctx = canvas.getContext('2d');
+
+                    ctx.drawImage(image, 0, 0);
+
+                    let data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+                    output.innerText = ASCIIRenderer.render(
+                        ASCIIRenderer.grayscale(data, ignoreTransparency, ignoreWhite, ignoreThreshold),
+                        imageScale,
+                        palette
+                    );
+
+                };
+
+            };
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,151 @@
+:root {
+
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --color: rgb(255,255,255);
+    --background: rgb(25,25,35);
+
+    --border-dark: rgb(64,64,74);
+    --accent: rgb(64,128,255);
+    --accent-2: rgb(128,200,255);
+
+}
+
+* {
+
+    font-family: var(--font-family);
+
+}
+
+html, body {
+
+    padding: 0;
+    margin: 0;
+
+    background: var(--background);
+
+    color: var(--color);
+
+}
+
+div#wrapper {
+
+    padding: 2em 3em;
+
+}
+
+hr {
+    
+    margin: 2em 0;
+
+}
+
+pre {
+
+    font-family: monospace;
+    color: rgb(0,0,0);
+
+    background: rgb(255,255,255);
+
+    width: fit-content;
+
+    font-weight: 900;
+
+    border: 1px solid rgb(128,128,128);
+
+}
+
+div#controls {
+
+    margin: 1em 0;
+
+    user-select: none;
+
+}
+
+button#generate-in, button#copy-in {
+
+    --padding-leftright: 0.5em;
+    --padding-topbottom: 0.25em;
+
+    --margin-leftright: 2em;
+    --margin-topbottom: 1em;
+
+    display: block;
+
+    width: calc(100% - var(--padding-leftright) * 2 - var(--margin-leftright) * 2);
+    height: calc(100% - var(--padding-topbottom) * 2 - var(--margin-topbottom) * 2);
+
+    padding: var(--padding-leftright) var(--padding-topbottom);
+    margin: var(--margin-topbottom) var(--margin-leftright);
+
+}
+
+#controls-table {
+
+    border-collapse: collapse;
+
+    padding: 1em 2em;
+
+}
+
+.controls-header {
+    
+    text-align: left;
+    white-space: nowrap;
+
+    font-weight: 600;
+
+}
+
+.controls-header, .controls-content {
+
+    padding: 4px 8px;
+
+    border: 1px solid rgb(64,64,64);
+
+}
+
+.controls-content {
+
+    text-align: right;
+
+}
+
+.controls-content > input[type='file'], input[type='range'], .controls-content > select, .controls-content > input[type='checkbox'] {
+
+    width: calc(100% - 16px);
+
+}
+
+button {
+
+    font-size: 1.125em;
+
+    color: rgb(255,255,255);
+
+    background-color: rgba(0,0,0,0);
+    
+    border: 1px solid rgb(64,64,64);
+    border-radius: 12px;
+
+    transition: background-color 125ms ease-in-out;
+
+}
+
+button:hover {
+
+    background-color: var(--border-dark);
+
+}
+
+button:active {
+
+    background-color: var(--accent);
+
+}
+
+.alt-row {
+
+    background-color: rgb(30,30,40);
+
+}
